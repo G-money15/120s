@@ -28,6 +28,18 @@
             font-size: 1.2em;
             color: darkorange;
         }
+        table {
+            margin-top: 20px;
+            width: 80%;
+            margin-left: auto;
+            margin-right: auto;
+            border-collapse: collapse;
+        }
+        table, th, td {
+            border: 1px solid black;
+            padding: 10px;
+            text-align: center;
+        }
     </style>
 </head>
 <body>
@@ -93,6 +105,18 @@
         <div id="positive-message" class="positive-message"></div>
         <div id="motivational-message" class="motivational-message"></div>
 
+        <table id="score-history">
+            <thead>
+                <tr>
+                    <th>Round</th>
+                    <th>Team 1 Score</th>
+                    <th>Team 2 Score</th>
+                </tr>
+            </thead>
+            <tbody>
+            </tbody>
+        </table>
+
         <div class="undo-button">
             <button onclick="undoLastScore()">Undo Last Score</button>
         </div>
@@ -104,7 +128,7 @@
         let team1RoundScore = 0;
         let team2RoundScore = 0;
         let currentRound = 1;
-        let lastScore = { team: null, points: 0 };
+        let scoreHistory = []; // Stores the history of all score changes
         let team1Name = "Girls";
         let team2Name = "Boys";
 
@@ -144,9 +168,6 @@
         }
 
         function addScore(team, points) {
-            lastScore.team = team;
-            lastScore.points = points;
-
             let teamName = '';
             if (team === 'team1') {
                 team1RoundScore += points;
@@ -159,6 +180,16 @@
                 document.getElementById('score2').textContent = team2Score;
                 teamName = team2Name;
             }
+
+            // Save the current round's score before moving on
+            scoreHistory.push({
+                round: currentRound,
+                team1: team1Score,
+                team2: team2Score,
+                team: team,
+                points: points
+            });
+
             checkRoundCompletion();
             checkWinner();
             showPositiveMessage(points, teamName);
@@ -168,6 +199,7 @@
         function checkRoundCompletion() {
             const totalRoundScore = team1RoundScore + team2RoundScore;
             if (totalRoundScore >= 30 || team1RoundScore >= 60 || team2RoundScore >= 60) {
+                addScoreToTable(currentRound, team1RoundScore, team2RoundScore);
                 moveToNextRound();
             }
         }
@@ -191,7 +223,7 @@
             if (team1Score >= 120) {
                 document.getElementById('winner').textContent = `${team1Name} Wins!`;
                 disableButtons();
-            } else if (team2Score >= 120) {
+            } else if (team2Score >=             } else if (team2Score >= 120) {
                 document.getElementById('winner').textContent = `${team2Name} Wins!`;
                 disableButtons();
             }
@@ -199,41 +231,70 @@
 
         function disableButtons() {
             const buttons = document.querySelectorAll('button');
-            buttons.forEach(button => button.disabled = true);
+            buttons.forEach(button => {
+                button.disabled = true;
+            });
         }
 
         function showPositiveMessage(points, teamName) {
-            const messageBox = document.getElementById('positive-message');
             if (points >= 30) {
-                messageBox.textContent = `Way to go ${teamName}!`;
+                document.getElementById('positive-message').textContent = `Way to go, ${teamName}!`;
             } else {
-                messageBox.textContent = '';
+                document.getElementById('positive-message').textContent = '';
             }
         }
 
         function showMotivationalMessage() {
-            const randomChance = Math.random();
-            if (randomChance < 0.15) {  // 15% chance
+            if (Math.random() < 0.15) { // 15% chance
                 const randomIndex = Math.floor(Math.random() * motivationalMessages.length);
-                const randomMessage = motivationalMessages[randomIndex];
-                document.getElementById('motivational-message').textContent = randomMessage;
+                document.getElementById('motivational-message').textContent = motivationalMessages[randomIndex];
             } else {
                 document.getElementById('motivational-message').textContent = '';
             }
         }
 
+        function addScoreToTable(round, team1Score, team2Score) {
+            const tableBody = document.querySelector('#score-history tbody');
+            const row = document.createElement('tr');
+            row.innerHTML = `
+                <td>${round}</td>
+                <td>${team1Score}</td>
+                <td>${team2Score}</td>
+            `;
+            tableBody.appendChild(row);
+        }
+
         function undoLastScore() {
+            if (scoreHistory.length === 0) return;
+
+            // Remove the last score from history
+            const lastScore = scoreHistory.pop();
             if (lastScore.team === 'team1') {
                 team1Score -= lastScore.points;
+                team1RoundScore -= lastScore.points;
                 document.getElementById('score1').textContent = team1Score;
             } else if (lastScore.team === 'team2') {
                 team2Score -= lastScore.points;
+                team2RoundScore -= lastScore.points;
                 document.getElementById('score2').textContent = team2Score;
             }
 
-            lastScore.team = null;
-            lastScore.points = 0;
+            // Update the table to reflect the undo action
+            const tableBody = document.querySelector('#score-history tbody');
+            if (tableBody.lastChild) {
+                tableBody.removeChild(tableBody.lastChild);
+            }
+
+            // Roll back the round if necessary
+            if (team1RoundScore + team2RoundScore === 0) {
+                currentRound--;
+                document.getElementById('round-number').textContent = currentRound;
+            }
+
+            document.getElementById('positive-message').textContent = '';  // Clear positive message
+            document.getElementById('motivational-message').textContent = '';  // Clear motivational message
         }
     </script>
 </body>
 </html>
+
