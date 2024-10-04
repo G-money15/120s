@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>120s Card Game Score Keeper</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            margin-top: 50px;
+        }
+        .team {
+            margin: 20px;
+        }
+        .winner {
+            color: green;
+            font-size: 2em;
+        }
+        .buttons {
+            margin: 10px;
+        }
+        .positive-message {
+            font-size: 1.5em;
+            color: blue;
+        }
+        .motivational-message {
+            font-size: 1.2em;
+            color: darkorange;
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+
+    <h1>120s</h1>
+
+    <div>
+        <label for="team1-name">Enter Team 1 Name: </label>
+        <input type="text" id="team1-name" placeholder="Team 1">
+        <label for="team2-name">Enter Team 2 Name: </label>
+        <input type="text" id="team2-name" placeholder="Team 2">
+        <button onclick="startGame()">Start Game</button>
+    </div>
+
+    <div id="scoreboard" style="display:none;">
+        <div class="team" id="team1">
+            <h2 id="team1-label">Team 1</h2>
+            <p>Score: <span id="score1">0</span></p>
+            <div class="buttons">
+                <button onclick="addScore('team1', 5)">Add 5 Points</button>
+                <button onclick="addScore('team1', 10)">Add 10 Points</button>
+                <button onclick="addScore('team1', 15)">Add 15 Points</button>
+                <button onclick="addScore('team1', 20)">Add 20 Points</button>
+                <button onclick="addScore('team1', 25)">Add 25 Points</button>
+                <button onclick="addScore('team1', 30)">Add 30 Points</button>
+                <button onclick="addScore('team1', 60)">Add 60 Points</button>
+            </div>
+        </div>
+
+        <div class="team" id="team2">
+            <h2 id="team2-label">Team 2</h2>
+            <p>Score: <span id="score2">0</span></p>
+            <div class="buttons">
+                <button onclick="addScore('team2', 5)">Add 5 Points</button>
+                <button onclick="addScore('team2', 10)">Add 10 Points</button>
+                <button onclick="addScore('team2', 15)">Add 15 Points</button>
+                <button onclick="addScore('team2', 20)">Add 20 Points</button>
+                <button onclick="addScore('team2', 25)">Add 25 Points</button>
+                <button onclick="addScore('team2', 30)">Add 30 Points</button>
+                <button onclick="addScore('team2', 60)">Add 60 Points</button>
+            </div>
+        </div>
+
+        <div id="winner" class="winner"></div>
+        <div id="positive-message" class="positive-message"></div>
+        <div id="motivational-message" class="motivational-message"></div>
+    </div>
+
+    <script>
+        let team1Score = 0;
+        let team2Score = 0;
+        let team1Name = "Team 1";
+        let team2Name = "Team 2";
+
+        const motivationalMessages = [
+            "Yes by!",
+            "What Odds?",
+            "Get on the GO.",
+            "Knows you're not crooked.",
+            "The secret of getting ahead is getting started.",
+            "The more you know, the more you realize you know nothing.",
+            "It does not do to dwell on dreams and forget to live.",
+            "The best investment you can make is in yourself.",
+            "You don’t have to be great to start, but you have to start to be great.",
+            "Keep pushing forward!",
+            "Success is the sum of small efforts repeated day in and day out."
+        ];
+
+        function startGame() {
+            const inputTeam1 = document.getElementById('team1-name').value;
+            const inputTeam2 = document.getElementById('team2-name').value;
+
+            if (inputTeam1) team1Name = inputTeam1;
+            if (inputTeam2) team2Name = inputTeam2;
+
+            document.getElementById('team1-label').textContent = team1Name;
+            document.getElementById('team2-label').textContent = team2Name;
+
+            document.getElementById('scoreboard').style.display = 'block';
+        }
+
+        function addScore(team, points) {
+            let teamName = '';
+            if (team === 'team1') {
+                team1Score += points;
+                document.getElementById('score1').textContent = team1Score;
+                teamName = team1Name;
+            } else if (team === 'team2') {
+                team2Score += points;
+                document.getElementById('score2').textContent = team2Score;
+                teamName = team2Name;
+            }
+            checkWinner();
+            showPositiveMessage(points, teamName);
+            showMotivationalMessage();
+        }
+
+        function checkWinner() {
+            if (team1Score >= 120) {
+                document.getElementById('winner').textContent = `${team1Name} Wins!`;
+                disableButtons();
+            } else if (team2Score >= 120) {
+                document.getElementById('winner').textContent = `${team2Name} Wins!`;
+                disableButtons();
+            }
+        }
+
+        function disableButtons() {
+            const buttons = document.querySelectorAll('button');
+            buttons.forEach(button => button.disabled = true);
+        }
+
+        function showPositiveMessage(points, teamName) {
+            const messageBox = document.getElementById('positive-message');
+            if (points >= 30) {
+                messageBox.textContent = `Way to go ${teamName}!`;
+            } else {
+                messageBox.textContent = '';
+            }
+        }
+
+        function showMotivationalMessage() {
+            const randomChance = Math.random();
+            if (randomChance < 0.15) {  // 15% chance
+                const randomIndex = Math.floor(Math.random() * motivationalMessages.length);
+                const randomMessage = motivationalMessages[randomIndex];
+                document.getElementById('motivational-message').textContent = randomMessage;
+            } else {
+                document.getElementById('motivational-message').textContent = '';
+            }
+        }
+    </script>
+
+</body>
+</html>
