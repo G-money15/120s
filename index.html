@@ -140,7 +140,7 @@
             currentDealerIndex = dealerOrder.indexOf(firstDealer);
             updateDealer();
 
-            document.getElementById('scoreboard').style.display = 'block';
+            document.getElementById('scoreboard').style.display = 'block'; // Show the scoreboard
         }
 
         function addScore(team, points) {
@@ -223,8 +223,6 @@
         }
 
         function undoLastScore() {
-            if (!lastScore.team || lastScore.points === 0) return;
-
             if (lastScore.team === 'team1') {
                 team1Score -= lastScore.points;
                 document.getElementById('score1').textContent = team1Score;
