@@ -223,4 +223,19 @@
         }
 
         function undoLastScore() {
-            if (!lastScore.team || lastScore.points === 
+            if (!lastScore.team || lastScore.points === 0) return;
+
+            if (lastScore.team === 'team1') {
+                team1Score -= lastScore.points;
+                document.getElementById('score1').textContent = team1Score;
+            } else if (lastScore.team === 'team2') {
+                team2Score -= lastScore.points;
+                document.getElementById('score2').textContent = team2Score;
+            }
+
+            lastScore.team = null;
+            lastScore.points = 0;
+        }
+    </script>
+</body>
+</html>
