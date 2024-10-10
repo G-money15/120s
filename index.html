@@ -28,6 +28,21 @@
             font-size: 1.2em;
             color: darkorange;
         }
+        .team-score {
+            font-size: 3em; /* Bigger score size */
+        }
+        table {
+            margin-top: 20px;
+            width: 80%;
+            margin-left: auto;
+            margin-right: auto;
+            border-collapse: collapse;
+        }
+        table, th, td {
+            border: 1px solid black;
+            padding: 10px;
+            text-align: center;
+        }
     </style>
 </head>
 <body>
@@ -46,8 +61,8 @@
         <select id="dealer">
             <option value="Grant">Grant</option>
             <option value="Robyn">Robyn</option>
-            <option value="Aimee">Aimee</option>
             <option value="Matt">Matt</option>
+            <option value="Aimee">Aimee</option>
         </select>
         <button onclick="startGame()">Start Game</button>
     </div>
@@ -63,7 +78,7 @@
 
         <div class="team" id="team1">
             <h2 id="team1-label">Girls</h2>
-            <p>Score: <span id="score1">0</span></p>
+            <p class="team-score">Score: <span id="score1">0</span></p>
             <div class="buttons">
                 <button onclick="addScore('team1', 5)">Add 5 Points</button>
                 <button onclick="addScore('team1', 10)">Add 10 Points</button>
@@ -72,12 +87,26 @@
                 <button onclick="addScore('team1', 25)">Add 25 Points</button>
                 <button onclick="addScore('team1', 30)">Add 30 Points</button>
                 <button onclick="addScore('team1', 60)">Add 60 Points</button>
+                <button onclick="addScore('team1', -15)">Subtract 15 Points</button>
+                <button onclick="addScore('team1', -20)">Subtract 20 Points</button>
+                <button onclick="addScore('team1', -25)">Subtract 25 Points</button>
+                <button onclick="addScore('team1', -30)">Subtract 30 Points</button>
             </div>
+            <table id="team1-history">
+                <thead>
+                    <tr>
+                        <th>Round</th>
+                        <th>Score</th>
+                    </tr>
+                </thead>
+                <tbody>
+                </tbody>
+            </table>
         </div>
 
         <div class="team" id="team2">
             <h2 id="team2-label">Boys</h2>
-            <p>Score: <span id="score2">0</span></p>
+            <p class="team-score">Score: <span id="score2">0</span></p>
             <div class="buttons">
                 <button onclick="addScore('team2', 5)">Add 5 Points</button>
                 <button onclick="addScore('team2', 10)">Add 10 Points</button>
@@ -86,7 +115,21 @@
                 <button onclick="addScore('team2', 25)">Add 25 Points</button>
                 <button onclick="addScore('team2', 30)">Add 30 Points</button>
                 <button onclick="addScore('team2', 60)">Add 60 Points</button>
+                <button onclick="addScore('team2', -15)">Subtract 15 Points</button>
+                <button onclick="addScore('team2', -20)">Subtract 20 Points</button>
+                <button onclick="addScore('team2', -25)">Subtract 25 Points</button>
+                <button onclick="addScore('team2', -30)">Subtract 30 Points</button>
             </div>
+            <table id="team2-history">
+                <thead>
+                    <tr>
+                        <th>Round</th>
+                        <th>Score</th>
+                    </tr>
+                </thead>
+                <tbody>
+                </tbody>
+            </table>
         </div>
 
         <div id="winner" class="winner"></div>
@@ -104,11 +147,11 @@
         let team1RoundScore = 0;
         let team2RoundScore = 0;
         let currentRound = 1;
-        let lastScore = { team: null, points: 0 };
+        let scoreHistory = []; // Stores the history of all score changes
         let team1Name = "Girls";
         let team2Name = "Boys";
 
-        let dealerOrder = ["Grant", "Robyn", "Aimee", "Matt"];
+        let dealerOrder = ["Grant", "Robyn", "Matt", "Aimee"];
         let currentDealerIndex = 0;
 
         const motivationalMessages = [
@@ -144,9 +187,6 @@
         }
 
         function addScore(team, points) {
-            lastScore.team = team;
-            lastScore.points = points;
-
             let teamName = '';
             if (team === 'team1') {
                 team1RoundScore += points;
@@ -159,32 +199,42 @@
                 document.getElementById('score2').textContent = team2Score;
                 teamName = team2Name;
             }
-            checkRoundCompletion();
-            checkWinner();
-            showPositiveMessage(points, teamName);
-            showMotivationalMessage();
-        }
 
-        function checkRoundCompletion() {
-            const totalRoundScore = team1RoundScore + team2RoundScore;
-            if (totalRoundScore >= 30 || team1RoundScore >= 60 || team2RoundScore >= 60) {
-                moveToNextRound();
+            // Save the current round's score before moving on
+            scoreHistory.push({ team, points, round: currentRound });
+
+            if (points < 0) {
+                document.getElementById('positive-message').textContent = "Ouch";
+            } else {
+                showPositiveMessage(points, teamName);
+                showMotivationalMessage();
             }
+
+            // Move to the next round if 30 points or more have been awarded this round
+            if (team1RoundScore + team2RoundScore >= 30 || Math.abs(team1RoundScore) + Math.abs(team2RoundScore) >= 30) {
+                addScoreToTable(currentRound, team1RoundScore, team2RoundScore, team);
+                currentRound++;
+                team1RoundScore = 0;
+                team2RoundScore = 0;
+                document.getElementById('round-number').textContent = currentRound;
+                updateDealer();
+            }
+
+            // Check if a team wins
+            checkWinner();
         }
 
-        function moveToNextRound() {
-            team1RoundScore = 0;
-            team2RoundScore = 0;
-            currentRound++;
-            document.getElementById('round-number').textContent = currentRound;
+        function addScoreToTable(round, team1RoundScore, team2RoundScore, team) {
+            const table1Body = document.querySelector('#team1-history tbody');
+            const table2Body = document.querySelector('#team2-history tbody');
 
-            // Rotate dealer
-            currentDealerIndex = (currentDealerIndex + 1) % dealerOrder.length;
-            updateDealer();
-        }
+            const row1 = document.createElement('tr');
+            row1.innerHTML = `<td>${round}</td><td>${team1RoundScore}</td>`;
+            table1Body.appendChild(row1);
 
-        function updateDealer() {
-            document.getElementById('current-dealer').textContent = dealerOrder[currentDealerIndex];
+            const row2 = document.createElement('tr');
+            row2.innerHTML = `<td>${round}</td><td>${team2RoundScore}</td>`;
+            table2Body.appendChild(row2);
         }
 
         function checkWinner() {
@@ -199,40 +249,68 @@
 
         function disableButtons() {
             const buttons = document.querySelectorAll('button');
-            buttons.forEach(button => button.disabled = true);
+            buttons.forEach(button => {
+                button.disabled = true;
+            });
         }
 
         function showPositiveMessage(points, teamName) {
-            const messageBox = document.getElementById('positive-message');
             if (points >= 30) {
-                messageBox.textContent = `Way to go ${teamName}!`;
+                document.getElementById('positive-message').textContent = `Way to go, ${teamName}!`;
             } else {
-                messageBox.textContent = '';
+                document.getElementById('positive-message').textContent = '';
             }
         }
 
         function showMotivationalMessage() {
-            const randomChance = Math.random();
-            if (randomChance < 0.15) {  // 15% chance
+            if (Math.random() < 0.15) { // 15% chance
                 const randomIndex = Math.floor(Math.random() * motivationalMessages.length);
-                const randomMessage = motivationalMessages[randomIndex];
-                document.getElementById('motivational-message').textContent = randomMessage;
+                document.getElementById('motivational-message').textContent = motivationalMessages[randomIndex];
             } else {
                 document.getElementById('motivational-message').textContent = '';
             }
         }
 
+        function updateDealer() {
+            document.getElementById('current-dealer').textContent = dealerOrder[currentDealerIndex];
+            currentDealerIndex = (currentDealerIndex + 1) % dealerOrder.length; // Rotate to next dealer
+        }
+
         function undoLastScore() {
+            if (scoreHistory.length === 0) return;
+
+            // Remove the last score from history
+            const lastScore = scoreHistory.pop();
             if (lastScore.team === 'team1') {
                 team1Score -= lastScore.points;
+                team1RoundScore -= lastScore.points;
                 document.getElementById('score1').textContent = team1Score;
             } else if (lastScore.team === 'team2') {
                 team2Score -= lastScore.points;
+                team2RoundScore -= lastScore.points;
                 document.getElementById('score2').textContent = team2Score;
             }
 
-            lastScore.team = null;
-            lastScore.points = 0;
+            // Update the table to reflect the undo action
+            const table1Body = document.querySelector('#team1-history tbody');
+            const table2Body = document.querySelector('#team2-history tbody';
+
+            if (team1RoundScore === 0 && table1Body.lastChild) {
+                table1Body.removeChild(table1Body.lastChild);
+            }
+
+            if (team2RoundScore === 0 && table2Body.lastChild) {
+                table2Body.removeChild(table2Body.lastChild);
+            }
+
+            // Roll back the round if necessary
+            if (team1RoundScore + team2RoundScore === 0) {
+                currentRound--;
+                document.getElementById('round-number').textContent = currentRound;
+            }
+
+            document.getElementById('positive-message').textContent = '';  // Clear positive message
+            document.getElementById('motivational-message').textContent = '';  // Clear motivational message
         }
     </script>
 </body>
