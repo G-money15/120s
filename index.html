@@ -168,16 +168,36 @@
             "Success is the sum of small efforts repeated day in and day out."
         ];
 
-        function startGame() {
-            const inputTeam1 = document.getElementById('team1-name').value;
-            const inputTeam2 = document.getElementById('team2-name').value;
-            const firstDealer = document.getElementById('dealer').value;
+function startGame() {
+    const inputTeam1 = document.getElementById('team1-name').value;
+    const inputTeam2 = document.getElementById('team2-name').value;
+    const firstDealer = document.getElementById('dealer').value;
 
-            if (inputTeam1) team1Name = inputTeam1;
-            if (inputTeam2) team2Name = inputTeam2;
+    if (inputTeam1) team1Name = inputTeam1;
+    if (inputTeam2) team2Name = inputTeam2;
 
-            document.getElementById('team1-label').textContent = team1Name;
-            document.getElementById('team2-label').textContent = team2Name;
+    document.getElementById('team1-label').textContent = team1Name;
+    document.getElementById('team2-label').textContent = team2Name;
+
+    // Set the first dealer and update the index
+    currentDealerIndex = dealerOrder.indexOf(firstDealer);
+    updateDealer();
+
+    document.getElementById('scoreboard').style.display = 'block'; // Show the scoreboard
+    document.getElementById('winner').textContent = ""; // Clear any previous winner message
+    team1Score = 0;
+    team2Score = 0;
+    document.getElementById('score1').textContent = team1Score;
+    document.getElementById('score2').textContent = team2Score;
+    currentRound = 1;
+    document.getElementById('round-number').textContent = currentRound;
+
+    // Clear previous round history
+    document.querySelector('#team1-history tbody').innerHTML = '';
+    document.querySelector('#team2-history tbody').innerHTML = '';
+
+    scoreHistory = []; // Reset score history
+}
 
             // Set the first dealer and update the index
             currentDealerIndex = dealerOrder.indexOf(firstDealer);
