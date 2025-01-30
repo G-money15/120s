@@ -1,337 +1,451 @@
 <!DOCTYPE html>
+
 <html lang="en">
+
 <head>
+
     <meta charset="UTF-8">
+
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
     <title>120s Card Game Score Keeper</title>
+
     <style>
+
         body {
+
             font-family: Arial, sans-serif;
+
             text-align: center;
+
             margin-top: 50px;
+
+            background-color: #f0f0f0;
+
         }
+
+        .container {
+
+            background: white;
+
+            padding: 20px;
+
+            border-radius: 10px;
+
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+
+            display: inline-block;
+
+        }
+
         .team {
+
             margin: 20px;
+
         }
+
         .winner {
+
             color: green;
+
             font-size: 2em;
+
         }
+
         .buttons {
+
             margin: 10px;
+
         }
-        .positive-message, .round-info, .undo-button, .dealer-info {
-            margin-top: 20px;
-            font-size: 1.2em;
+
+        .positive-message {
+
+            font-size: 1.5em;
+
+            color: blue;
+
         }
+
         .motivational-message {
+
             font-size: 1.2em;
+
             color: darkorange;
-        }
-        .team-score {
-            font-size: 3em; /* Bigger score size */
-        }
-        table {
+
             margin-top: 20px;
-            width: 80%;
-            margin-left: auto;
-            margin-right: auto;
-            border-collapse: collapse;
+
         }
-        table, th, td {
-            border: 1px solid black;
-            padding: 10px;
-            text-align: center;
+
+        .score-history {
+
+            margin-top: 20px;
+
+            text-align: left;
+
         }
+
     </style>
+
 </head>
+
 <body>
 
-    <h1>120s</h1>
+ 
 
-    <div>
-        <label for="team1-name">Enter Team 1 Name: </label>
-        <input type="text" id="team1-name" placeholder="Girls">
-        <label for="team2-name">Enter Team 2 Name: </label>
-        <input type="text" id="team2-name" placeholder="Boys">
-    </div>
+    <div class="container">
 
-    <div>
-        <label for="dealer">Who Deals First?</label>
-        <select id="dealer">
-            <option value="Grant">Grant</option>
-            <option value="Robyn">Robyn</option>
-            <option value="Matt">Matt</option>
-            <option value="Aimee">Aimee</option>
-        </select>
-        <button onclick="startGame()">Start Game</button>
-    </div>
+        <h1>120s</h1>
 
-    <div id="scoreboard" style="display:none;">
-        <div class="dealer-info">
-            <h2>Current Dealer: <span id="current-dealer"></span></h2>
+ 
+
+        <div>
+
+            <label for="team1-name">Enter Team 1 Name: </label>
+
+            <input type="text" id="team1-name" placeholder="Team 1">
+
+            <label for="team2-name">Enter Team 2 Name: </label>
+
+            <input type="text" id="team2-name" placeholder="Team 2">
+
+            <button onclick="startGame()">Start Game</button>
+
         </div>
 
-        <div class="round-info">
-            <h2>Round <span id="round-number">1</span></h2>
-        </div>
+ 
 
-        <div class="team" id="team1">
-            <h2 id="team1-label">Girls</h2>
-            <p class="team-score">Score: <span id="score1">0</span></p>
-            <div class="buttons">
-                <button onclick="addScore('team1', 5)">Add 5 Points</button>
-                <button onclick="addScore('team1', 10)">Add 10 Points</button>
-                <button onclick="addScore('team1', 15)">Add 15 Points</button>
-                <button onclick="addScore('team1', 20)">Add 20 Points</button>
-                <button onclick="addScore('team1', 25)">Add 25 Points</button>
-                <button onclick="addScore('team1', 30)">Add 30 Points</button>
-                <button onclick="addScore('team1', 60)">Add 60 Points</button>
-                <button onclick="addScore('team1', -15)">Subtract 15 Points</button>
-                <button onclick="addScore('team1', -20)">Subtract 20 Points</button>
-                <button onclick="addScore('team1', -25)">Subtract 25 Points</button>
-                <button onclick="addScore('team1', -30)">Subtract 30 Points</button>
+        <div id="scoreboard" style="display:none;">
+
+            <div class="team" id="team1">
+
+                <h2 id="team1-label">Team 1</h2>
+
+                <p>Score: <span id="score1">0</span></p>
+
+                <div class="buttons">
+
+                    <input type="number" id="team1-points" placeholder="Enter points">
+
+                    <button onclick="addScore('team1')">Add Points</button>
+
+                    <button onclick="undoScore('team1')">Undo Last Score</button>
+
+                </div>
+
+                <div class="score-history" id="team1-history"></div>
+
             </div>
-            <table id="team1-history">
-                <thead>
-                    <tr>
-                        <th>Round</th>
-                        <th>Score</th>
-                    </tr>
-                </thead>
-                <tbody>
-                </tbody>
-            </table>
-        </div>
 
-        <div class="team" id="team2">
-            <h2 id="team2-label">Boys</h2>
-            <p class="team-score">Score: <span id="score2">0</span></p>
-            <div class="buttons">
-                <button onclick="addScore('team2', 5)">Add 5 Points</button>
-                <button onclick="addScore('team2', 10)">Add 10 Points</button>
-                <button onclick="addScore('team2', 15)">Add 15 Points</button>
-                <button onclick="addScore('team2', 20)">Add 20 Points</button>
-                <button onclick="addScore('team2', 25)">Add 25 Points</button>
-                <button onclick="addScore('team2', 30)">Add 30 Points</button>
-                <button onclick="addScore('team2', 60)">Add 60 Points</button>
-                <button onclick="addScore('team2', -15)">Subtract 15 Points</button>
-                <button onclick="addScore('team2', -20)">Subtract 20 Points</button>
-                <button onclick="addScore('team2', -25)">Subtract 25 Points</button>
-                <button onclick="addScore('team2', -30)">Subtract 30 Points</button>
+ 
+
+            <div class="team" id="team2">
+
+                <h2 id="team2-label">Team 2</h2>
+
+                <p>Score: <span id="score2">0</span></p>
+
+                <div class="buttons">
+
+                    <input type="number" id="team2-points" placeholder="Enter points">
+
+                    <button onclick="addScore('team2')">Add Points</button>
+
+                    <button onclick="undoScore('team2')">Undo Last Score</button>
+
+                </div>
+
+                <div class="score-history" id="team2-history"></div>
+
             </div>
-            <table id="team2-history">
-                <thead>
-                    <tr>
-                        <th>Round</th>
-                        <th>Score</th>
-                    </tr>
-                </thead>
-                <tbody>
-                </tbody>
-            </table>
+
+ 
+
+            <div id="winner" class="winner"></div>
+
+            <div id="positive-message" class="positive-message"></div>
+
+            <div id="motivational-message" class="motivational-message"></div>
+
+            <button onclick="resetGame()">Reset Game</button>
+
         </div>
 
-        <div id="winner" class="winner"></div>
-        <div id="positive-message" class="positive-message"></div>
-        <div id="motivational-message" class="motivational-message"></div>
-
-        <div class="undo-button">
-            <button onclick="undoLastScore()">Undo Last Score</button>
-        </div>
     </div>
+
+ 
 
     <script>
-        let team1Score = 0;
-        let team2Score = 0;
-        let team1RoundScore = 0;
-        let team2RoundScore = 0;
-        let currentRound = 1;
-        let scoreHistory = []; // Stores the history of all score changes
-        let team1Name = "Girls";
-        let team2Name = "Boys";
 
-        let dealerOrder = ["Grant", "Robyn", "Matt", "Aimee"];
-        let currentDealerIndex = 0;
+        let team1Score = 0;
+
+        let team2Score = 0;
+
+        let team1Name = "Team 1";
+
+        let team2Name = "Team 2";
+
+        let team1History = [];
+
+        let team2History = [];
+
+ 
 
         const motivationalMessages = [
+
             "Yes by!",
+
             "What Odds?",
+
             "Get on the GO.",
+
             "Knows you're not crooked.",
+
             "The secret of getting ahead is getting started.",
+
             "The more you know, the more you realize you know nothing.",
+
             "It does not do to dwell on dreams and forget to live.",
+
             "The best investment you can make is in yourself.",
+
             "You don’t have to be great to start, but you have to start to be great.",
+
             "Keep pushing forward!",
+
             "Success is the sum of small efforts repeated day in and day out."
+
         ];
 
-function startGame() {
-    const inputTeam1 = document.getElementById('team1-name').value;
-    const inputTeam2 = document.getElementById('team2-name').value;
-    const firstDealer = document.getElementById('dealer').value;
+ 
 
-    if (inputTeam1) team1Name = inputTeam1;
-    if (inputTeam2) team2Name = inputTeam2;
+       function startGame() {
 
-    document.getElementById('team1-label').textContent = team1Name;
-    document.getElementById('team2-label').textContent = team2Name;
+            const inputTeam1 = document.getElementById('team1-name').value;
 
-    // Set the first dealer and update the index
-    currentDealerIndex = dealerOrder.indexOf(firstDealer);
-    updateDealer();
+            const inputTeam2 = document.getElementById('team2-name').value;
 
-    document.getElementById('scoreboard').style.display = 'block'; // Show the scoreboard
-    document.getElementById('winner').textContent = ""; // Clear any previous winner message
-    team1Score = 0;
-    team2Score = 0;
-    document.getElementById('score1').textContent = team1Score;
-    document.getElementById('score2').textContent = team2Score;
-    currentRound = 1;
-    document.getElementById('round-number').textContent = currentRound;
+ 
 
-    // Clear previous round history
-    document.querySelector('#team1-history tbody').innerHTML = '';
-    document.querySelector('#team2-history tbody').innerHTML = '';
+            if (inputTeam1) team1Name = inputTeam1;
 
-    scoreHistory = []; // Reset score history
-}
+            if (inputTeam2) team2Name = inputTeam2;
 
-            // Set the first dealer and update the index
-            currentDealerIndex = dealerOrder.indexOf(firstDealer);
-            updateDealer();
+ 
 
-            document.getElementById('scoreboard').style.display = 'block'; // Show the scoreboard
+            document.getElementById('team1-label').textContent = team1Name;
+
+            document.getElementById('team2-label').textContent = team2Name;
+
+ 
+
+            document.getElementById('scoreboard').style.display = 'block';
+
         }
 
-        function addScore(team, points) {
+ 
+
+        function addScore(team) {
+
+            const points = parseInt(document.getElementById(`${team}-points`).value);
+
             let teamName = '';
+
             if (team === 'team1') {
-                team1RoundScore += points;
+
                 team1Score += points;
+
                 document.getElementById('score1').textContent = team1Score;
+
                 teamName = team1Name;
+
+                team1History.push(points);
+
+                updateHistory('team1', team1History);
+
             } else if (team === 'team2') {
-                team2RoundScore += points;
+
                 team2Score += points;
+
                 document.getElementById('score2').textContent = team2Score;
+
                 teamName = team2Name;
+
+                team2History.push(points);
+
+                updateHistory('team2', team2History);
+
             }
 
-            // Save the current round's score before moving on
-            scoreHistory.push({ team, points, round: currentRound });
-
-            if (points < 0) {
-                document.getElementById('positive-message').textContent = "Ouch";
-            } else {
-                showPositiveMessage(points, teamName);
-                showMotivationalMessage();
-            }
-
-            // Move to the next round if 30 points or more have been awarded this round
-            if (team1RoundScore + team2RoundScore >= 30 || Math.abs(team1RoundScore) + Math.abs(team2RoundScore) >= 30) {
-                addScoreToTable(currentRound, team1RoundScore, team2RoundScore, team);
-                currentRound++;
-                team1RoundScore = 0;
-                team2RoundScore = 0;
-                document.getElementById('round-number').textContent = currentRound;
-                updateDealer();
-            }
-
-            // Check if a team wins
             checkWinner();
+
+            showPositiveMessage(points, teamName);
+
+            showMotivationalMessage();
+
         }
 
-        function addScoreToTable(round, team1RoundScore, team2RoundScore, team) {
-            const table1Body = document.querySelector('#team1-history tbody');
-            const table2Body = document.querySelector('#team2-history tbody');
+ 
 
-            const row1 = document.createElement('tr');
-            row1.innerHTML = `<td>${round}</td><td>${team1RoundScore}</td>`;
-            table1Body.appendChild(row1);
+        function undoScore(team) {
 
-            const row2 = document.createElement('tr');
-            row2.innerHTML = `<td>${round}</td><td>${team2RoundScore}</td>`;
-            table2Body.appendChild(row2);
+            let teamName = '';
+
+            if (team === 'team1' && team1History.length > 0) {
+
+                const lastScore = team1History.pop();
+
+                team1Score -= lastScore;
+
+                document.getElementById('score1').textContent = team1Score;
+
+                teamName = team1Name;
+
+                updateHistory('team1', team1History);
+
+            } else if (team === 'team2' && team2History.length > 0) {
+
+                const lastScore = team2History.pop();
+
+                team2Score -= lastScore;
+
+                document.getElementById('score2').textContent = team2Score;
+
+                teamName = team2Name;
+
+                updateHistory('team2', team2History);
+
+            }
+
+            document.getElementById('winner').textContent = '';
+
+            enableButtons();
+
         }
+
+ 
+
+        function updateHistory(team, history) {
+
+            const historyDiv = document.getElementById(`${team}-history`);
+
+            historyDiv.innerHTML = `<strong>Score History:</strong> ${history.join(', ')}`;
+
+        }
+
+ 
 
         function checkWinner() {
+
             if (team1Score >= 120) {
+
                 document.getElementById('winner').textContent = `${team1Name} Wins!`;
+
                 disableButtons();
+
             } else if (team2Score >= 120) {
+
                 document.getElementById('winner').textContent = `${team2Name} Wins!`;
+
                 disableButtons();
+
             }
+
         }
+
+ 
 
         function disableButtons() {
+
             const buttons = document.querySelectorAll('button');
-            buttons.forEach(button => {
-                button.disabled = true;
-            });
+
+            buttons.forEach(button => button.disabled = true);
+
         }
+
+ 
+
+        function enableButtons() {
+
+            const buttons = document.querySelectorAll('button');
+
+            buttons.forEach(button => button.disabled = false);
+
+        }
+
+ 
 
         function showPositiveMessage(points, teamName) {
+
+            const messageBox = document.getElementById('positive-message');
+
             if (points >= 30) {
-                document.getElementById('positive-message').textContent = `Way to go, ${teamName}!`;
+
+                messageBox.textContent = `Way to go ${teamName}!`;
+
             } else {
-                document.getElementById('positive-message').textContent = '';
+
+                messageBox.textContent = '';
+
             }
+
         }
+
+ 
 
         function showMotivationalMessage() {
-            if (Math.random() < 0.15) { // 15% chance
+
+            const randomChance = Math.random();
+
+            if (randomChance < 0.15) {  // 15% chance
+
                 const randomIndex = Math.floor(Math.random() * motivationalMessages.length);
-                document.getElementById('motivational-message').textContent = motivationalMessages[randomIndex];
+
+                const randomMessage = motivationalMessages[randomIndex];
+
+                document.getElementById('motivational-message').textContent = randomMessage;
+
             } else {
+
                 document.getElementById('motivational-message').textContent = '';
+
             }
+
         }
 
-        function updateDealer() {
-            document.getElementById('current-dealer').textContent = dealerOrder[currentDealerIndex];
-            currentDealerIndex = (currentDealerIndex + 1) % dealerOrder.length; // Rotate to next dealer
+ 
+
+        function resetGame() {
+
+            team1Score = 0;
+
+            team2Score = 0;
+
+            team1History = [];
+
+            team2History = [];
+
+            document.getElementById('score1').textContent = team1Score;
+
+            document.getElementById('score2').textContent = team2Score;
+
+            document.getElementById('team1-history').innerHTML = '';
+
+            document.getElementById('team2-history').innerHTML = '';
+
+            document.getElementById('winner').textContent = '';
+
+            document.getElementById('positive-message').textContent = '';
+
+            document.getElementById('motivational-message').textContent = '';
+
+            enableButtons();
+
         }
 
-        function undoLastScore() {
-            if (scoreHistory.length === 0) return;
-
-            // Remove the last score from history
-            const lastScore = scoreHistory.pop();
-            if (lastScore.team === 'team1') {
-                team1Score -= lastScore.points;
-                team1RoundScore -= lastScore.points;
-                document.getElementById('score1').textContent = team1Score;
-            } else if (lastScore.team === 'team2') {
-                team2Score -= lastScore.points;
-                team2RoundScore -= lastScore.points;
-                document.getElementById('score2').textContent = team2Score;
-            }
-
-            // Update the table to reflect the undo action
-            const table1Body = document.querySelector('#team1-history tbody');
-            const table2Body = document.querySelector('#team2-history tbody';
-
-            if (team1RoundScore === 0 && table1Body.lastChild) {
-                table1Body.removeChild(table1Body.lastChild);
-            }
-
-            if (team2RoundScore === 0 && table2Body.lastChild) {
-                table2Body.removeChild(table2Body.lastChild);
-            }
-
-            // Roll back the round if necessary
-            if (team1RoundScore + team2RoundScore === 0) {
-                currentRound--;
-                document.getElementById('round-number').textContent = currentRound;
-            }
-
-            document.getElementById('positive-message').textContent = '';  // Clear positive message
-            document.getElementById('motivational-message').textContent = '';  // Clear motivational message
-        }
     </script>
+
+ 
+
 </body>
+
 </html>
