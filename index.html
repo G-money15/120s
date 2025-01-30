@@ -126,10 +126,6 @@
 
                     <input type="number" id="team1-points" placeholder="Enter points">
 
-                    <button onclick="addScore('team1')">Add Points</button>
-
-                    <button onclick="undoScore('team1')">Undo Last Score</button>
-
                 </div>
 
                 <div class="score-history" id="team1-history"></div>
@@ -148,10 +144,6 @@
 
                     <input type="number" id="team2-points" placeholder="Enter points">
 
-                    <button onclick="addScore('team2')">Add Points</button>
-
-                    <button onclick="undoScore('team2')">Undo Last Score</button>
-
                 </div>
 
                 <div class="score-history" id="team2-history"></div>
@@ -159,6 +151,18 @@
             </div>
 
  
+
+            <div class="buttons">
+
+                <button onclick="addScores()">Add Points</button>
+
+                <button onclick="undoLastRound()">Undo Last Round</button>
+
+            </div>
+
+ 
+
+            <div id="round-indicator">Round: <span id="round-number">1</span></div>
 
             <div id="winner" class="winner"></div>
 
@@ -187,6 +191,8 @@
         let team1History = [];
 
         let team2History = [];
+
+        let roundNumber = 1;
 
  
 
@@ -218,7 +224,7 @@
 
  
 
-       function startGame() {
+        function startGame() {
 
             const inputTeam1 = document.getElementById('team1-name').value;
 
@@ -244,41 +250,49 @@
 
  
 
-        function addScore(team) {
+        function addScores() {
 
-            const points = parseInt(document.getElementById(`${team}-points`).value);
+            const team1Points = parseInt(document.getElementById('team1-points').value);
 
-            let teamName = '';
+            const team2Points = parseInt(document.getElementById('team2-points').value);
 
-            if (team === 'team1') {
+ 
 
-                team1Score += points;
+            team1Score += team1Points;
 
-                document.getElementById('score1').textContent = team1Score;
+            team2Score += team2Points;
 
-                teamName = team1Name;
+ 
 
-                team1History.push(points);
+            document.getElementById('score1').textContent = team1Score;
 
-                updateHistory('team1', team1History);
+            document.getElementById('score2').textContent = team2Score;
 
-            } else if (team === 'team2') {
+ 
 
-                team2Score += points;
+            team1History.push(team1Points);
 
-                document.getElementById('score2').textContent = team2Score;
+            team2History.push(team2Points);
 
-                teamName = team2Name;
+ 
 
-                team2History.push(points);
+            updateHistory('team1', team1History);
 
-                updateHistory('team2', team2History);
+            updateHistory('team2', team2History);
 
-            }
+ 
+
+            roundNumber++;
+
+            document.getElementById('round-number').textContent = roundNumber;
+
+ 
 
             checkWinner();
 
-            showPositiveMessage(points, teamName);
+            showPositiveMessage(team1Points, team1Name);
+
+            showPositiveMessage(team2Points, team2Name);
 
             showMotivationalMessage();
 
@@ -286,39 +300,39 @@
 
  
 
-        function undoScore(team) {
+        function undoLastRound() {
 
-            let teamName = '';
+            if (roundNumber > 1) {
 
-            if (team === 'team1' && team1History.length > 0) {
+                team1Score -= team1History.pop();
 
-                const lastScore = team1History.pop();
+                team2Score -= team2History.pop();
 
-                team1Score -= lastScore;
+ 
 
                 document.getElementById('score1').textContent = team1Score;
 
-                teamName = team1Name;
+                document.getElementById('score2').textContent = team2Score;
+
+ 
 
                 updateHistory('team1', team1History);
 
-            } else if (team === 'team2' && team2History.length > 0) {
-
-                const lastScore = team2History.pop();
-
-                team2Score -= lastScore;
-
-                document.getElementById('score2').textContent = team2Score;
-
-                teamName = team2Name;
-
                 updateHistory('team2', team2History);
 
+ 
+
+                roundNumber--;
+
+                document.getElementById('round-number').textContent = roundNumber;
+
+ 
+
+                document.getElementById('winner').textContent = '';
+
+                enableButtons();
+
             }
-
-            document.getElementById('winner').textContent = '';
-
-            enableButtons();
 
         }
 
@@ -424,6 +438,10 @@
 
             team2History = [];
 
+            roundNumber = 1;
+
+ 
+
             document.getElementById('score1').textContent = team1Score;
 
             document.getElementById('score2').textContent = team2Score;
@@ -432,11 +450,15 @@
 
             document.getElementById('team2-history').innerHTML = '';
 
+            document.getElementById('round-number').textContent = roundNumber;
+
             document.getElementById('winner').textContent = '';
 
             document.getElementById('positive-message').textContent = '';
 
             document.getElementById('motivational-message').textContent = '';
+
+ 
 
             enableButtons();
 
@@ -449,3 +471,5 @@
 </body>
 
 </html>
+
+ 
