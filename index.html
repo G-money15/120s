@@ -80,7 +80,39 @@
 
             margin-top: 20px;
 
-            text-align: left;
+            text-align: center;
+
+        }
+
+        .score-table {
+
+            width: 100%;
+
+            border-collapse: collapse;
+
+            margin-top: 20px;
+
+        }
+
+        .score-table th, .score-table td {
+
+            border: 1px solid #ddd;
+
+            padding: 8px;
+
+        }
+
+        .score-table th {
+
+            background-color: #f2f2f2;
+
+        }
+
+        .total-score {
+
+            font-size: 1.5em;
+
+            font-weight: bold;
 
         }
 
@@ -120,15 +152,7 @@
 
                 <h2 id="team1-label">Team 1</h2>
 
-                <p>Score: <span id="score1">0</span></p>
-
-                <div class="buttons">
-
-                    <input type="number" id="team1-points" placeholder="Enter points">
-
-                </div>
-
-                <div class="score-history" id="team1-history"></div>
+                <p class="total-score">Score: <span id="score1">0</span></p>
 
             </div>
 
@@ -138,21 +162,17 @@
 
                 <h2 id="team2-label">Team 2</h2>
 
-                <p>Score: <span id="score2">0</span></p>
-
-                <div class="buttons">
-
-                    <input type="number" id="team2-points" placeholder="Enter points">
-
-                </div>
-
-                <div class="score-history" id="team2-history"></div>
+                <p class="total-score">Score: <span id="score2">0</span></p>
 
             </div>
 
  
 
             <div class="buttons">
+
+                <input type="number" id="team1-points" placeholder="Enter Team 1 points">
+
+                <input type="number" id="team2-points" placeholder="Enter Team 2 points">
 
                 <button onclick="addScores()">Add Points</button>
 
@@ -163,6 +183,32 @@
  
 
             <div id="round-indicator">Round: <span id="round-number">1</span></div>
+
+            <div class="score-history">
+
+                <table class="score-table">
+
+                    <thead>
+
+                        <tr>
+
+                            <th>Round</th>
+
+                            <th>Team 1</th>
+
+                            <th>Team 2</th>
+
+                        </tr>
+
+                    </thead>
+
+                    <tbody id="score-history-body">
+
+                    </tbody>
+
+                </table>
+
+            </div>
 
             <div id="winner" class="winner"></div>
 
@@ -276,9 +322,7 @@
 
  
 
-            updateHistory('team1', team1History);
-
-            updateHistory('team2', team2History);
+            updateHistory();
 
  
 
@@ -316,9 +360,7 @@
 
  
 
-                updateHistory('team1', team1History);
-
-                updateHistory('team2', team2History);
+                updateHistory();
 
  
 
@@ -338,11 +380,43 @@
 
  
 
-        function updateHistory(team, history) {
+        function updateHistory() {
 
-            const historyDiv = document.getElementById(`${team}-history`);
+            const historyBody = document.getElementById('score-history-body');
 
-            historyDiv.innerHTML = `<strong>Score History:</strong> ${history.join(', ')}`;
+            historyBody.innerHTML = '';
+
+            for (let i = 0; i < team1History.length; i++) {
+
+                const row = document.createElement('tr');
+
+                const roundCell = document.createElement('td');
+
+                const team1Cell = document.createElement('td');
+
+                const team2Cell = document.createElement('td');
+
+ 
+
+                roundCell.textContent = i + 1;
+
+                team1Cell.textContent = team1History[i];
+
+                team2Cell.textContent = team2History[i];
+
+ 
+
+                row.appendChild(roundCell);
+
+                row.appendChild(team1Cell);
+
+                row.appendChild(team2Cell);
+
+ 
+
+                historyBody.appendChild(row);
+
+            }
 
         }
 
@@ -444,32 +518,6 @@
 
             document.getElementById('score1').textContent = team1Score;
 
-            document.getElementById('score2').textContent = team2Score;
-
-            document.getElementById('team1-history').innerHTML = '';
-
-            document.getElementById('team2-history').innerHTML = '';
-
-            document.getElementById('round-number').textContent = roundNumber;
-
-            document.getElementById('winner').textContent = '';
-
-            document.getElementById('positive-message').textContent = '';
-
-            document.getElementById('motivational-message').textContent = '';
-
- 
-
-            enableButtons();
-
-        }
-
-    </script>
-
- 
-
-</body>
-
-</html>
+            document.getElementById('score2').textContent = team2
 
  
