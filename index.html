@@ -448,6 +448,8 @@
 
             buttons.forEach(button => button.disabled = true);
 
+            document.querySelector('button[onclick="resetGame()"]').disabled = false;
+
         }
 
  
@@ -497,27 +499,5 @@
                 document.getElementById('motivational-message').textContent = '';
 
             }
-
-        }
-
- 
-
-        function resetGame() {
-
-            team1Score = 0;
-
-            team2Score = 0;
-
-            team1History = [];
-
-            team2History = [];
-
-            roundNumber = 1;
-
- 
-
-            document.getElementById('score1').textContent = team1Score;
-
-            document.getElementById('score2').textContent = team2
 
  
